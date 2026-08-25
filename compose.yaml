@@ -1,0 +1,19 @@
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DEBUG: "false"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-change-this-before-production}"
+      DATABASE_PATH: "/app/data/db.sqlite3"
+      DATASET_ROOT: "/app/dataset"
+    volumes:
+      - app_data:/app/data
+      - ./dataset:/app/dataset:ro
+    restart: unless-stopped
+
+volumes:
+  app_data:
