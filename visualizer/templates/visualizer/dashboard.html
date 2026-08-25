@@ -1,0 +1,66 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neurodata visualizer</title>
+  <link rel="stylesheet" href="{% static 'visualizer/dashboard.css' %}">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">NOVA · DATA EXPLORER</p>
+        <h1>Session overview</h1>
+        <p class="lede">Behavioral responses and EEG event markers, brought together from the dataset parser.</p>
+      </div>
+      <div class="live"><span></span> Dataset loaded</div>
+    </header>
+
+    <section class="stats" aria-label="Dataset summary">
+      <article><span>Files discovered</span><strong>{{ dashboard.summary.file_count }}</strong></article>
+      <article><span>Parsed sources</span><strong>{{ dashboard.summary.parsed_count }}</strong></article>
+      <article><span>Binary recordings</span><strong>{{ dashboard.summary.binary_count }}</strong></article>
+      <article><span>Parse errors</span><strong>{{ dashboard.summary.error_count }}</strong></article>
+    </section>
+
+    <section class="panel behavior-panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">BEHAVIOR</p><h2>Trial performance</h2></div>
+        <label>Session <select id="behavior-session"></select></label>
+      </div>
+      <div class="session-metrics" id="behavior-metrics"></div>
+      <div class="chart-wrap"><canvas id="behavior-chart" aria-label="Reaction time by trial"></canvas></div>
+      <div class="legend"><span class="made">Made</span><span class="missed">Missed</span></div>
+    </section>
+
+    <section class="panel trigger-panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">EEG MARKERS</p><h2>Event timeline</h2></div>
+        <label>Recording <select id="trigger-session"></select></label>
+      </div>
+      <div class="session-metrics" id="trigger-metrics"></div>
+      <div class="chart-wrap short"><canvas id="trigger-chart" aria-label="EEG trigger event timeline"></canvas></div>
+      <div class="code-legend" id="code-legend"></div>
+    </section>
+
+    <section class="panel files-panel">
+      <div class="panel-head"><div><p class="eyebrow">MANIFEST</p><h2>Dataset files</h2></div></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Status</th></tr></thead>
+          <tbody>
+          {% for file in dashboard.files %}
+            <tr><td>{{ file.path }}</td><td>{{ file.extension }}</td><td>{{ file.size }}</td><td><span class="badge {{ file.status }}">{{ file.status }}</span></td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  {{ dashboard.behavioral_sessions|json_script:"behavior-data" }}
+  {{ dashboard.trigger_sessions|json_script:"trigger-data" }}
+  <script src="{% static 'visualizer/dashboard.js' %}"></script>
+</body>
+</html>
